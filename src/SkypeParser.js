@@ -5,7 +5,7 @@ jens a. ewald, ififelse.net, 2012, licensed by the unlicence
 */
 var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-String.prototype.parsefromSykpe = function() {
+String.prototype.parsefromSkype = function() {
   var d, e, h, iswin, k, keys, lasttime, lastuser, m, macparser, message, mo, parser, s, user, y, _blob, _res, _result, _results;
   iswin = this.match(/^\[\d{2}/);
   parser = iswin ? /(\[((\d{2}).(\d{2}).(\d{4}))\s((\d{2})\:(\d{2})\:(\d{2}))\]\s(.*)\:\s)((.|(\r\n[^\[\d\.]{9}))+)/g : macparser = /((((.*)\s((\d+)\.(\d+)\.(\d+)\s+(\d+):(\d+))(?=\s|\n))((.|(\n(?!.*\d{2}\.)))+)))/g;

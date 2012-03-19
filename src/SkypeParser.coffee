@@ -4,7 +4,7 @@ Parse Messages from a Skype conversation in to a JSON Object
 jens a. ewald, ififelse.net, 2012, licensed by the unlicence
 ###
 
-String::parsefromSykpe = ->
+String::parsefromSkype = ->
   #### Prepare the parser!
   # The parser must be different for Windows or Mac Version.
   # Linux is not tested yet.

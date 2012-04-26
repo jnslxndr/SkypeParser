@@ -87,16 +87,20 @@ String::parsefromSkype = ->
       # The Mac-Skype timestamp does not give us a full year. So we must guess.
       y = "20#{y}"
     
+    topic = topic ? ""
+    
     # Finally we can build a new object
     _conversation_partial =
       User: user || lastuser,
       Zeit: new Date(y,mo,d,h,m,(s ? 0)) || lasttime,
       Text: message,
-      Komentar: ""
+      Kommentar: ""
+      Thema: topic || lasttopic
     
     # Keep last used unstable properties as fallback properties
-    lastuser = _conversation_partial.User
-    lasttime = _conversation_partial.Zeit
+    lastuser  = _conversation_partial.User
+    lasttime  = _conversation_partial.Zeit
+    lasttopic = _conversation_partial.Thema
     
     # Return the parsed object
     _conversation_partial

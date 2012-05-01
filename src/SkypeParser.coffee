@@ -87,7 +87,7 @@ String::parsefromSkype = ->
       # The Mac-Skype timestamp does not give us a full year. So we must guess.
       y = "20#{y}"
     
-    topic = topic ? ""
+    topic = message.getSkypeTopic() ? ""
     
     # Finally we can build a new object
     _conversation_partial =
@@ -104,3 +104,21 @@ String::parsefromSkype = ->
     
     # Return the parsed object
     _conversation_partial
+
+
+###
+# Retrieve a topic change from a message
+###
+String::getSkypeTopic = ->
+  res = @.match ///
+    \[ 
+    # Date
+      # \d{2}.\d{2}.\d{4}
+      # \s
+    # Time
+      \d{2}\:\d{2}\:\d{2}
+    \]\s
+    \*{3}.*Thema.*"(.+)".*\*{3}
+  ///
+  if res.length? and res.length>1 then res[1] else null
+

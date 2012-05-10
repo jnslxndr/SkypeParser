@@ -30,25 +30,54 @@ String::parsefromSkype = ->
   # #### The RegExp for Windows style messages
   parser = if platform_is_windows
     ///
-      # First a meta information, then the actual message
+    (
+      \[\d{2}:\d{2}:\d{2}\]
+    )
+    \s
+    (
+      (.*):\s
       (
-        \[ 
-        # Date
-          ((\d{2}).(\d{2}).(\d{4}))
-          \s
-        # Time
-          ((\d{2})\:(\d{2})\:(\d{2}))
-        \]\s
-      # The Username
-        (.*)
-      # _(Between the name and the text is ": " as a seperator)_
-        \:\s
+        (.*) | ([\r\n]{2}(?!\2))
       )
-      # The message text runs until the end or a new line with meta
-      (
-        (.|(\r\n[^\[\d\.]{9}))+
-      )
+      (?:\2|$)
+    )
     ///g
+    # ///
+    #   # First a meta information, then the actual message
+    #   (
+    #   # (\r\n)?
+    #   \[
+    #     # Date
+    #     # ((\d{2}).(\d{2}).(\d{4}))
+    #     #   \s
+    #     # Time
+    #     (\d{2})\:(\d{2})\:(\d{2})
+    #   \]
+    #   )
+    #   \s
+    #   (
+    #     (
+    #       # # The Username
+    #       (.*)
+    #       # # _(Between the name and the text is ": " as a seperator)_
+    #       \:\s
+    #       # # The message text runs until the end or a new line with meta
+    #       (.+)(?:\r\n\[\d{2}:\d{2}:\d{2}\]\s)
+    #       |
+    #       (.+)$
+    #     )
+    #     |
+    #     (
+    #       \*{3}\s
+    #       (
+    #         (.*"(.+)")
+    #         |
+    #         (.*hat\s(.*)\shinzugef.*)
+    #       )
+    #       \s\*{3}(?:\r\n)
+    #     )
+    #   )
+    # ///g
   else
     # #### The RegExp for Mac style messages
     ///
@@ -72,6 +101,7 @@ String::parsefromSkype = ->
       )
     ///g
   
+  
   # With the parser RegExp and the platform flag we can parse the message string, 
   # build a collection object and return it.
   while _result = parser.exec @
@@ -79,6 +109,7 @@ String::parsefromSkype = ->
     # must collect from different positions.
     keys = if platform_is_windows then [3,4,5,7,8,9,10,11] else [6,7,8,9,10,4,11]
     _res = (e for k,e of _result when parseInt(k) in keys)
+    console.log _result
     if platform_is_windows
       [d,mo,y,h,m,s,user,message] = _res
     else
@@ -87,7 +118,7 @@ String::parsefromSkype = ->
       # The Mac-Skype timestamp does not give us a full year. So we must guess.
       y = "20#{y}"
     
-    topic = message.getSkypeTopic() ? ""
+    topic = message?.getSkypeTopic() ? ""
     
     # Finally we can build a new object
     _conversation_partial =

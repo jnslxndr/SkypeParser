@@ -39,8 +39,7 @@ win_thema = "[20:27:50] *** kati gaedcke hat Linda hinzugefügt ***"+"\r\n"+
             "[20:35:31] kati gaedcke: 3 CHINESEN auf dem Kontrabass"+"\r\n"+
             "[20:35:48] Linda: hihi"
             
-win_thema = ""+
-            "[20:27:50] *** kati gaedcke hat Linda hinzugefügt ***"+"\r\n"+
+win_thema = "[20:27:50] *** kati gaedcke hat Linda hinzugefügt ***"+"\r\n"+
             "[20:28:36] kati gaedcke: hallo"+"\r\n"+
             "[20:28:59] *** kati gaedcke hat das Thema geändert in \"testkonversation\" ***"+"\r\n"+
             "[20:29:10] Linda: hallo kati"+"\r\n"+
@@ -68,11 +67,9 @@ expect = chai.expect
 
 
 required_keys = [
-  "Zeit"
-  "User"
-  "Text"
-  "Kommentar"
-  "Thema"
+  "users"
+  "topics"
+  "messages"
 ]
 
 # ============================================================================
@@ -82,49 +79,46 @@ describe "The String prototype", ->
   it "should have picked up the Method", ->
     String.should.respondTo('parsefromSkype')
 
-
-describe "Utils", ->
-  it "should be able to retrieve the topic", ->
-    s = "[20:28:59] *** kati gaedcke hat das Thema geändert in \"testkonversation\" ***"
-    expect(s.getSkypeTopic()).to.equal "testkonversation"
-
-
 describe "Conversation from Windows Skype can be parsed", ->
   beforeEach ->
-    @parsed = win_thema.parsefromSkype()
-  it "should not return null", ->
-    @parsed.should.not.have.length 0
-  # it "should have required keys", ->
-  #   @parsed[0].should.have.keys required_keys
-
-
-# describe "Conversation parses and", ->
-#   beforeEach ->
-#     @win = "[05:06:17] John Doe: Hello World".parsefromSkype()
-#   
-#   it "should return null on failed parsing", ->
-#     "Test".parsefromSkype().should.be.null
-#     
-#   it "should return an array on proper input", ->
-#     @win.should.be.instanceof Array
-# 
-#   it "should return an array of length 1 on simple input", ->
-#     @win.should.have.length 1
-# 
-#   it "should return an object with correct keys", ->
-#     @win[0].should.have.keys required_keys
-#     
-#   it "should have the Name", ->
-#     @wind[0].User.should.equal("John Doe")
-#     
-#   it "and shoudl have the Message", ->
-#     @wind[0].User.should.equal("Hello World")
-#     
-#   it "which was posted on", ->
-#     expected_date = Date.parse "Thu, 01 Jan 1970 05:06:17 GMT-0000"
-#     @wind[0].Zeit.should.equal expected_date
-#     
-  # it "have the topic 'testkonversation'", ->
-  #   res = win_thema.parsefromSkype()
-  #   res[0].Thema.should.equal "testkonversation"
+    @win = "[05:06:17] John Doe: Hello World".parsefromSkype()
     
+  it "should return null on other text", ->
+    "Test".parsefromSkype().should.be.null
+    
+  it "should not return null", ->
+    @win.should.not.equal null
+    
+  it "should have required keys", ->
+    @win.should.have.keys required_keys
+    
+  it "should return an array on proper input", ->
+    @win.messages.should.be.instanceof Array
+    
+  it "should return an array of length 1 on simple input", ->
+    @win.messages.should.have.length 1
+    
+  it "should have the Name", ->
+    @win.messages[0].user.should.equal("John Doe")
+    
+  it "and should have the Message", ->
+    @win.messages[0].message.should.equal("Hello World")
+    
+  it "which was posted on", ->
+    expected_date = Date.fromClockTime "05:06:17"
+    @win.messages[0].time.getTime().should.equal expected_date.getTime()
+
+
+describe "Conversation parses and", ->
+  beforeEach ->
+    @win = win_thema.parsefromSkype()
+      
+  it "have the topic 'testkonversation'", ->
+    @win.topics[0].name.should.equal "testkonversation"
+    
+  it "have the users", ->
+    names = (user.name for user in @win.users)
+    names.should.include name for name in ["kati gaedcke","Linda"]
+    
+  it "should have 4 messages", ->
+    @win.messages.length.should.equal 4

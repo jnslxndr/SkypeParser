@@ -9,18 +9,18 @@ String::parsefromSkype = ->
   #
   # On Windows the input looks something like this:
   #
-  #   > [17:25:06] Jane Doe: Howdy! ...
-  #   > [17:26:10] John Doe: Oh! Hi Jane, nic...
-  #   > [17:28:28] John Doe: How's the weath...
+  #   > [17:25:06] Jane Doe: Howdy! ...  
+  #   > [17:26:10] John Doe: Oh! Hi Jane, nic...  
+  #   > [17:28:28] John Doe: How's the weath...  
   #
   # The Mac Version gives you more this style:
   #
-  #   > Jane Doe 28.10.11 12:31
-  #   > Howdy! Nice to see you!
-  #   > John Doe 28.10.11 12:31
-  #   > Oh! Hi Jane, nice weather today, isn't it
-  #   > 28.10.11 12:31
-  #   > How's the weather in Australia?
+  #   > Jane Doe 28.10.11 12:31  
+  #   > Howdy! Nice to see you!  
+  #   > John Doe 28.10.11 12:31  
+  #   > Oh! Hi Jane, nice weather today, isn't it  
+  #   > 28.10.11 12:31  
+  #   > How's the weather in Australia?  
   #
 
   # _Store the platform flag for later use!_
@@ -48,12 +48,13 @@ String::parsefromSkype = ->
           # from the message text (which runs across multiple lines)
           ([\s\S]+?)
         )
-        | # ... or we have a state change / sysex message
+        # ... or we have a state change / sysex message
+        |
         (
           # which starts with 3 asterix'
           (\*{3})\s
           (
-            # then it can be a new user by an existing user
+            # and can be a new user by an existing user
             ((.+)\shat\s(.+?)\shinzu.+)
             |
             # or the topic has been changed by an existing user.
@@ -151,12 +152,13 @@ String::parsefromSkype = ->
     # END Matching Loop
 
   # Finally return the messages:
-  messages
+  return messages
 
-###
-# A Date helper
-# Add a helper for the Date Object to be able to parse realtive Objects
-###
+
+
+# ### Date.fromClockTime
+# Adds a helper for the Date Object to be able to parse clock times.
+# 
 Date.fromClockTime = (time) ->
   # Start with the epoch and just pass in some 24h clock time
-  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
+  return new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")

@@ -140,8 +140,8 @@ String::parsefromSkype = ->
       _users.push newuser
 
     # Update the topics buffer
-    if topic? and topic  not in _topics
-      topics.push {topic,since:time}
+    if topic and topic  not in _topics
+      topics.push {name:topic,since:time}
       _topics.push topic
 
     # If we do not have an actual message, we can continue

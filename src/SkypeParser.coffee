@@ -1,32 +1,32 @@
-### 
+###
 # Parse Messages from a Skype conversation in to a JSON Object.
 # jens a. ewald, ififelse.net, 2012, licensed by the unlicence
 ###
 
 String::parsefromSkype = ->
-  # The parser must be different for Windows or Mac Version.  
+  # The parser must be different for Windows or Mac Version.
   # Linux is not tested yet.
   #
   # On Windows the input looks something like this:
-  # 
-  #   > [06.05.2009 17:25:06] Jane Doe: Howdy! ...  
-  #   > [06.05.2009 17:26:10] John Doe: Oh! Hi Jane, nic...  
-  #   > [06.05.2009 17:28:28] John Doe: How's the weath...  
-  # 
-  # The Mac Version gives you more this style:
-  # 
-  #   > Jane Doe 28.10.11 12:31  
-  #   > Howdy! Nice to see you!  
-  #   > John Doe 28.10.11 12:31  
-  #   > Oh! Hi Jane, nice weather today, isn't it  
-  #   > 28.10.11 12:31  
-  #   > How's the weather in Australia?  
   #
-  
+  #   > [17:25:06] Jane Doe: Howdy! ...
+  #   > [17:26:10] John Doe: Oh! Hi Jane, nic...
+  #   > [17:28:28] John Doe: How's the weath...
+  #
+  # The Mac Version gives you more this style:
+  #
+  #   > Jane Doe 28.10.11 12:31
+  #   > Howdy! Nice to see you!
+  #   > John Doe 28.10.11 12:31
+  #   > Oh! Hi Jane, nice weather today, isn't it
+  #   > 28.10.11 12:31
+  #   > How's the weather in Australia?
+  #
+
   # _Store the platform flag for later use!_
   # So, we can dissect it with two different RegExp.
   platform_is_windows = @.match /^\[\d{2}/
-  
+
   # #### The RegExp for Windows style messages
   parser = if platform_is_windows
     ///
@@ -137,54 +137,7 @@ String::parsefromSkype = ->
     if newuser and newuser not in _users
       users.push  {name:newuser,joined_on:time}
       _users.push newuser
-    lastuser  = _conversation_partial.User
-    lasttime  = _conversation_partial.Zeit
-    lasttopic = _conversation_partial.Thema
-    
-    # Return the parsed object
-    _conversation_partial
 
-
-###
-# Retrieve a topic change from a message
-###
-String::getSkypeTopic = ->
-  res = @.match ///
-    \[ 
-    # Date
-      # \d{2}.\d{2}.\d{4}
-###
-# A Date helper
-# Add a helper for the Date Object to be able to parse realtive Objects
-###
-Date.fromClockTime = (time) ->
-  # Start with the epoch and just pass in some 24h clock time
-  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
-###
-# A Date helper
-# Add a helper for the Date Object to be able to parse realtive Objects
-###
-Date.fromClockTime = (time) ->
-  # Start with the epoch and just pass in some 24h clock time
-  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
-###
-# A Date helper
-# Add a helper for the Date Object to be able to parse realtive Objects
-###
-Date.fromClockTime = (time) ->
-  # Start with the epoch and just pass in some 24h clock time
-  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
-###
-# A Date helper
-# Add a helper for the Date Object to be able to parse realtive Objects
-###
-Date.fromClockTime = (time) ->
-  # Start with the epoch and just pass in some 24h clock time
-  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
-      # \s
-    # Time
-      \d{2}\:\d{2}\:\d{2}
-    \]\s
     # Update the topics buffer
     if topic? and topic  not in _topics
       topics.push {topic,since:time}

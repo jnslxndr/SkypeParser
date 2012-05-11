@@ -89,35 +89,54 @@ String::parsefromSkype = ->
         )
       )
     ///g
-  
-  
-  # With the parser RegExp and the platform flag we can parse the message string, 
+
+  # Whitelist of Values
+  include = if platform_is_windows
+    [
+      2  # Date/Time
+      5  # Username
+      6  # Message
+      8  # Sysex Token
+      14 # Sysex User (Topic)
+      15 # Sysex Topic Command
+      16 # Sysex New Topic name
+      11 # Sysex User (UserAdd)
+      12 # Sysex UserAdd New Users name
+    ]
+  else
+    [
+      # Mac Whitelist to come
+    ]
+
+  _topics = []
+  topics = []
+  _users  = []
+  users  = []
+  # With the parser RegExp and the platform flag we can parse the message string,
   # build a collection object and return it.
-  while _result = parser.exec @
-    # For each platform the resulting array is a bit different, so we
-    # must collect from different positions.
-    keys = if platform_is_windows then [3,4,5,7,8,9,10,11] else [6,7,8,9,10,4,11]
-    _res = (e for k,e of _result when parseInt(k) in keys)
-    console.log _result
-    if platform_is_windows
-      [d,mo,y,h,m,s,user,message] = _res
-    else
-      [user,d,mo,y,h,m,message]   = _res
-      # **Warning! Unprecise stuff.** 
-      # The Mac-Skype timestamp does not give us a full year. So we must guess.
-      y = "20#{y}"
-    
-    topic = message?.getSkypeTopic() ? ""
-    
-    # Finally we can build a new object
-    _conversation_partial =
-      User: user || lastuser,
-      Zeit: new Date(y,mo,d,h,m,(s ? 0)) || lasttime,
-      Text: message,
-      Kommentar: ""
-      Thema: topic || lasttopic
-    
-    # Keep last used unstable properties as fallback properties
+  messages = while _result = parser.exec @
+    # Start with some fresh vars:
+    [time,user,message,token,command,newuser] = (new Array(7))
+
+    # Retrieve the whitelisted parts from the hit
+    res = (match for match,index in _result when index in include and match isnt undefined)
+    if res.length is 3 # we have a normal message
+      [time,user,message] = res
+    else if res.length is 4 # we have a sysex message for new user
+      [time,token,user,newuser] = res
+    else if res.length is 5 # we have a sysex message for new topic
+      [time,token,user,command,topic] = res
+
+    # Parse the time
+    time = Date.fromClockTime(time)
+
+    # Update the users buffer
+    if user and user not in _users
+      users.push  {name:user,joined_on:time}
+      _users.push user
+    if newuser and newuser not in _users
+      users.push  {name:newuser,joined_on:time}
+      _users.push newuser
     lastuser  = _conversation_partial.User
     lasttime  = _conversation_partial.Zeit
     lasttopic = _conversation_partial.Thema
@@ -134,11 +153,57 @@ String::getSkypeTopic = ->
     \[ 
     # Date
       # \d{2}.\d{2}.\d{4}
+###
+# A Date helper
+# Add a helper for the Date Object to be able to parse realtive Objects
+###
+Date.fromClockTime = (time) ->
+  # Start with the epoch and just pass in some 24h clock time
+  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
+###
+# A Date helper
+# Add a helper for the Date Object to be able to parse realtive Objects
+###
+Date.fromClockTime = (time) ->
+  # Start with the epoch and just pass in some 24h clock time
+  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
+###
+# A Date helper
+# Add a helper for the Date Object to be able to parse realtive Objects
+###
+Date.fromClockTime = (time) ->
+  # Start with the epoch and just pass in some 24h clock time
+  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
+###
+# A Date helper
+# Add a helper for the Date Object to be able to parse realtive Objects
+###
+Date.fromClockTime = (time) ->
+  # Start with the epoch and just pass in some 24h clock time
+  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")
       # \s
     # Time
       \d{2}\:\d{2}\:\d{2}
     \]\s
-    \*{3}.*Thema.*"(.+)".*\*{3}
-  ///
-  if res.length? and res.length>1 then res[1] else null
+    # Update the topics buffer
+    if topic? and topic  not in _topics
+      topics.push {topic,since:time}
+      _topics.push topic
 
+    # If we do not have an actual message, we can continue
+    continue unless message
+
+    # else update the messages buffer
+    res = {time,user,message,topic:topic ? ""}
+    # END Matching Loop
+
+  # Finally return the messages:
+  messages
+
+###
+# A Date helper
+# Add a helper for the Date Object to be able to parse realtive Objects
+###
+Date.fromClockTime = (time) ->
+  # Start with the epoch and just pass in some 24h clock time
+  new Date(Date.parse "Thu, 01 Jan 1970 #{time} GMT-0000")

@@ -152,7 +152,7 @@ String::parsefromSkype = ->
     # END Matching Loop
 
   # Finally return the messages:
-  return messages
+  return {users,topics,messages}
 
 
 

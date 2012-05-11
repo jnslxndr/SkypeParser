@@ -30,54 +30,43 @@ String::parsefromSkype = ->
   # #### The RegExp for Windows style messages
   parser = if platform_is_windows
     ///
-    (
-      \[\d{2}:\d{2}:\d{2}\]
-    )
-    \s
-    (
-      (.*):\s
+      # First find the time!
       (
-        (.*) | ([\r\n]{2}(?!\2))
+        \[
+          (\d{2}:\d{2}:\d{2})
+        \]
       )
-      (?:\2|$)
-    )
+      # Time and the actual message are always seperated with a space!
+      \s
+      (
+        # The message can be just a message ...
+        (
+          # so, we  have users name
+          (.+)
+          # which is seperated with a colon and a space
+          :\s
+          # from the message text (which runs across multiple lines)
+          ([\s\S]+?)
+        )
+        | # ... or we have a state change / sysex message
+        (
+          # which starts with 3 asterix'
+          (\*{3})\s
+          (
+            # then it can be a new user by an existing user
+            ((.+)\shat\s(.+?)\shinzu.+)
+            |
+            # or the topic has been changed by an existing user.
+            ((.+)\shat\sdas\s(Thema).+\sin\s"(.+)")
+          )
+          # Afterwards the sysex closes with 3 asterix' again.
+          \s\*{3}
+        )
+      )
+      # As each message block is either followed by a line break and a new time
+      # tag or the end of the string, we look ahead for it:
+      (?=(\r\n\[\d{2}:\d{2}:\d{2}\])|$)
     ///g
-    # ///
-    #   # First a meta information, then the actual message
-    #   (
-    #   # (\r\n)?
-    #   \[
-    #     # Date
-    #     # ((\d{2}).(\d{2}).(\d{4}))
-    #     #   \s
-    #     # Time
-    #     (\d{2})\:(\d{2})\:(\d{2})
-    #   \]
-    #   )
-    #   \s
-    #   (
-    #     (
-    #       # # The Username
-    #       (.*)
-    #       # # _(Between the name and the text is ": " as a seperator)_
-    #       \:\s
-    #       # # The message text runs until the end or a new line with meta
-    #       (.+)(?:\r\n\[\d{2}:\d{2}:\d{2}\]\s)
-    #       |
-    #       (.+)$
-    #     )
-    #     |
-    #     (
-    #       \*{3}\s
-    #       (
-    #         (.*"(.+)")
-    #         |
-    #         (.*hat\s(.*)\shinzugef.*)
-    #       )
-    #       \s\*{3}(?:\r\n)
-    #     )
-    #   )
-    # ///g
   else
     # #### The RegExp for Mac style messages
     ///

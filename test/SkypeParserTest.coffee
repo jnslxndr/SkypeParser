@@ -122,6 +122,9 @@ describe "Conversation parses and", ->
   it "have the users", ->
     names = (user.name for user in @win.users)
     names.should.include name for name in ["kati gaedcke","Linda"]
-    
+
   it "should have 4 messages", ->
-    @win.messages.length.should.equal 4
+    @win.messages.length.should.equal 5
+
+  it "parse multiline messages", ->
+    @win.messages[2].message.should.equal "hallo kati"+"\r\n"+"oder ne wurst?"+"\r\n"+"Nicht?"

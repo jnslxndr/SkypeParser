@@ -42,8 +42,11 @@ win_thema = "[20:27:50] *** kati gaedcke hat Linda hinzugefügt ***"+"\r\n"+
 win_thema = "[20:27:50] *** kati gaedcke hat Linda hinzugefügt ***"+"\r\n"+
             "[20:28:36] kati gaedcke: hallo"+"\r\n"+
             "[20:28:59] *** kati gaedcke hat das Thema geändert in \"testkonversation\" ***"+"\r\n"+
+            "[20:29:00] Linda: Noch ein test"+"\r\n"+
+            "oder nicht?"+"\r\n"+
             "[20:29:10] Linda: hallo kati"+"\r\n"+
-            "oder ne wurst ?"+"\r\n"+
+            "oder ne wurst?"+"\r\n"+
+            "Nicht?"+"\r\n"+
             "[20:35:31] kati gaedcke: 3 CHINESEN auf dem Kontrabass"+"\r\n"+
             "[20:35:48] Linda: hihi"
 
